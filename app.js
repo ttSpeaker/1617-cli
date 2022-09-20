@@ -7,7 +7,10 @@ const listsRouter = require("./routes/lists-router");
 const app = express();
 
 app.use(bodyParser.json());
-
+app.use((req, res, next) => {
+  console.log(req.body);
+  next();
+});
 app.use("/todo", todoRouter);
 app.use("/lists", listsRouter);
 app.use("/healthchek", (req, res, next) => {
