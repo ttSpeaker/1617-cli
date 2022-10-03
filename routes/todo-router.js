@@ -1,20 +1,15 @@
 const express = require("express");
 const { v4: uuidv4 } = require("uuid");
 
-const filesMethods = require("../files-functions/files-mehods");
+const business = require("../business/todos");
 
 const todoRouter = express.Router();
 
 // /todo ...
 todoRouter.get("/:id", async (req, res) => {
   const id = req.params.id;
-  const todosList = await filesMethods.readFilePromise("todos");
-  todosList.forEach((todo) => {
-    if (id === todo.id) {
-      res.send(todo);
-      return;
-    }
-  });
+  const todo = await business.retrieveTodoById(id);
+  res.send(todo);
 });
 
 todoRouter.post("/", async (req, res) => {
@@ -24,11 +19,7 @@ todoRouter.post("/", async (req, res) => {
     description: req.body.description,
     done: req.body.done,
   };
-
-  const todosList = await filesMethods.readFilePromise("todos");
-  todosList.push(todo);
-  await filesMethods.writeFilePromise("todos", todosList);
-
+  await business.createTodo(todo);
   res.send(todo);
 });
 
@@ -40,32 +31,19 @@ todoRouter.put("/:id", async (req, res) => {
     description: req.body.description,
     done: req.body.done,
   };
-  const todosList = await filesMethods.readFilePromise("todos");
-
-  for (let i = 0; i < todosList.length; i++) {
-    if (todosList[i].id === editId) {
-      todosList[i] = todoUpdateData;
-    }
-  }
-  await filesMethods.writeFilePromise("todos", todosList);
+  await business.updateTodo(editId, todoUpdateData);
   res.send(todoUpdateData);
 });
 
 todoRouter.delete("/:id", async (req, res) => {
   const id = req.params.id;
-  const todosList = await filesMethods.readFilePromise("todos");
-  for (let i = 0; i < todosList.length; i++) {
-    if (id === todosList[i].id) {
-      todosList.splice(i, 1);
-    }
-  }
-  await filesMethods.writeFilePromise("todos", todosList);
+  await business.deleteTodo(id);
   res.status(204).send();
 });
 
 todoRouter.get("/", async (req, res) => {
-  const todosList = await filesMethods.readFilePromise("todos");
-  res.send(todosList);
+  const todos = await business.retrieveAllTodos();
+  res.send(todos);
 });
 
 module.exports = todoRouter;
