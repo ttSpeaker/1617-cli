@@ -1,15 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const todoRouter = require("./routes/todo-router");
-const listsRouter = require("./routes/lists-router");
+const usersRouter = require("./routes/users");
+
 
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use("/todo", todoRouter);
-app.use("/lists", listsRouter);
+app.use("/user", usersRouter);
+
 app.use("/healthchek", (req, res, next) => {
   res.status(200);
   res.send("OK");
