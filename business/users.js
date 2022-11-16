@@ -1,50 +1,46 @@
 const userRepository = require("../repositories/users");
-
-const retrieveUserById = async (id) => {
+const searchUserByEmail = async (email) => {
   try {
-    const user = await userRepository.getById(id);
+    const user = await userRepository.findByEmail(email);
+    if (user) {
+      return user;
+    }
+    return null;
+  } catch (err) {
+    throw err;
+  }
+};
+const retrieveUserById = async (id, requireExpenses, requireCategories) => {
+  try {
+    const user = await userRepository.getById(
+      id,
+      stringToBool(requireExpenses),
+      stringToBool(requireCategories)
+    );
+    if (user) {
+      return user;
+    }
+    return null;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const createUser = async (name, email, password) => {
+  // VALIDAR DATOS..
+  try {
+    const user = await userRepository.create(name, email, password);
     return user;
   } catch (err) {
     throw err;
   }
 };
 
-const createUser = async (name, email) => {
-  // VALIDAR DATOS..
-  try {
-    await userRepository.create(name, email);
-    return;
-  } catch (err) {
-    throw err;
-  }
+const stringToBool = (text) => {
+  return text.toLowerCase() === "true";
 };
-
-// const updateTodo = async (id, data) => {
-//   const todosList = await repository.retrieve("todos");
-//   for (let i = 0; i < todosList.length; i++) {
-//     if (todosList[i].id === editId) {
-//       todosList[i] = todoUpdateData;
-//     }
-//   }
-//   await repository.save("todos", todosList);
-//   return;
-// };
-
-// const deleteTodo = async (id) => {
-//   const todosList = await repository.retrieve("todos");
-//   for (let i = 0; i < todosList.length; i++) {
-//     if (id === todosList[i].id) {
-//       todosList.splice(i, 1);
-//     }
-//   }
-//   await repository.save("todos", todosList);
-// };
-
-// const retrieveAllTodos = async () => {
-//   return await repository.retrieve("todos");
-// };
-
 module.exports = {
   retrieveUserById,
+  searchUserByEmail,
   createUser,
 };

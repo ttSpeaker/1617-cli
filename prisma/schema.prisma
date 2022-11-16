@@ -6,38 +6,44 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Expense {
-  id Int @id @default(autoincrement()) // PRIMARY_KEY
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ammount Float
   date DateTime
-  note String? @db.VarChar(255)
+  note String?
   category Category? @relation(fields: [categoryId], references: [id])
-  categoryId Int?
-  users User[]
+  categoryId String? @db.ObjectId
+  users User[] @relation(fields: [userIds], references: [id])
+  userIds String[] @db.ObjectId
 }
 
 model Category {
- id Int @id @default(autoincrement())
+ id String @id @default(auto()) @map("_id") @db.ObjectId
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
- title String @db.VarChar(255)
- description String? @db.VarChar(255)
+ title String
+ description String?
  expenses Expense[]
- users User[]
+ users User[] @relation(fields: [userIds], references: [id])
+ userIds String[] @db.ObjectId
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name String @db.VarChar(255)
-  email String @db.VarChar(255) // UNIQUE
-  expenses Expense[]
-  categories Category[]
+  name String 
+  role String?
+  email String @unique
+  password String
+  expenses Expense[] @relation(fields: [expensesIds], references: [id])
+  expensesIds String[] @db.ObjectId
+  categories Category[] @relation(fields: [categorieIds], references: [id])
+  categorieIds String[] @db.ObjectId
 }

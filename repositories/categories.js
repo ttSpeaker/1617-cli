@@ -11,3 +11,20 @@ const getCategoriesForUser = async (id) => {
     throw err;
   }
 };
+
+const create = async (title, description, userId) => {
+  try {
+    const result = await prisma.category.create({
+      data: {
+        title: title,
+        description: description,
+        users: {
+          connect: [{ id: userId }],
+        },
+      },
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+module.exports = { getCategoriesForUser, create };

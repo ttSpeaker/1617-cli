@@ -1,20 +1,31 @@
 const prisma = require("./prisma-client");
 
-const create = async (name, email) => {
+const create = async (name, email, password) => {
   try {
     await prisma.user.create({
-      data: { name: name, email: email },
+      data: { name: name, email: email, password: password },
     });
   } catch (err) {
     throw err;
   }
 };
 
-const getById = async (id) => {
+const getById = async (id, requireExpenses, requireCategories) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: id },
-      include: { categories: false, expenses: true },
+      include: { categories: requireCategories, expenses: requireExpenses },
+    });
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findByEmail = async (email) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: email },
     });
     return user;
   } catch (err) {
@@ -25,4 +36,5 @@ const getById = async (id) => {
 module.exports = {
   create,
   getById,
+  findByEmail,
 };
